@@ -43,7 +43,10 @@ def send_mail(smtp_server, from_email, to_email, auth_email, auth_passwd, subjec
         print('curl stdout:', procrun.stdout.strip())
     if procrun.stderr:
         print('curl stderr:', procrun.stderr, file=sys.stderr)
-    procrun.check_returncode()
+    if procrun.returncode != 0:
+        print('MESSAGE SEND FAILED:', file=sys.stderr)
+        print(content, file=sys.stderr)
+    return procrun.returncode
 
 
 def data_text_summary(data):
@@ -133,8 +136,9 @@ def main():
     proc_result = get_proc_result(args.args, args.timeout)
     # print(proc_result.get_report())
     if proc_result.errcode or proc_result.returncode != 0:
-        send_mail(args.smtp_server, args.from_email, args.to_email, args.auth_email, args.passwd,
-            proc_result.get_status(), proc_result.get_report())
+        mail_returncode = send_mail(args.smtp_server, args.from_email, args.to_email,
+            args.auth_email, args.passwd, proc_result.get_status(), proc_result.get_report())
+        sys.exit(mail_returncode)
 
 
 if __name__ == '__main__':
