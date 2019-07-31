@@ -51,7 +51,7 @@ def send_mail(smtp_server, from_email, to_email, auth_email, auth_passwd, subjec
 
 def data_text_summary(data):
     try:
-        res = data.decode('UTF-8')
+        res = data.decode('UTF-8').strip()
     except UnicodeDecodeError as e:
         res = '{}: {}\n{}'.format(type(e).__name__, str(e), str(data))
     SUMMARY_LIMIT = 2000
